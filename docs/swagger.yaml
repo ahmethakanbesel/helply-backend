@@ -1,0 +1,283 @@
+basePath: /api
+definitions:
+  models.Article:
+    properties:
+      category:
+        $ref: '#/definitions/models.ArticleCategory'
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/models.Product'
+      product_id:
+        type: integer
+      title:
+        maxLength: 255
+        type: string
+      updated_at:
+        type: string
+      votes:
+        type: integer
+    required:
+    - category
+    - id
+    - product_id
+    - title
+    type: object
+  models.ArticleCategory:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        maxLength: 255
+        type: string
+      updated_at:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  models.Page:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      slug:
+        maxLength: 255
+        type: string
+      title:
+        maxLength: 255
+        type: string
+      updated_at:
+        type: string
+    required:
+    - id
+    - title
+    type: object
+  models.Post:
+    properties:
+      author:
+        maxLength: 255
+        type: string
+      book_status:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      title:
+        maxLength: 255
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    required:
+    - author
+    - book_status
+    - id
+    - title
+    - user_id
+    type: object
+  models.Product:
+    properties:
+      created_at:
+        type: string
+      icon:
+        maxLength: 255
+        type: string
+      id:
+        type: integer
+      image:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      page:
+        $ref: '#/definitions/models.Page'
+      page_id:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        maxLength: 255
+        type: string
+      id:
+        type: integer
+      password_hash:
+        maxLength: 255
+        type: string
+      role_id:
+        type: integer
+      updated_at:
+        type: string
+      user_status:
+        type: integer
+      userRole:
+        $ref: '#/definitions/models.UserRole'
+    required:
+    - email
+    - id
+    - password_hash
+    - role_id
+    - user_status
+    type: object
+  models.UserRole:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        maxLength: 31
+        type: string
+      updated_at:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+info:
+  contact:
+    email: your@mail.com
+    name: API Support
+  description: This is an auto-generated API Docs.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: API
+  version: "1.0"
+paths:
+  /api/v1/articles:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Content
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      - description: Product ID
+        in: body
+        name: product_id
+        required: true
+        schema:
+          type: integer
+      - description: Category ID
+        in: body
+        name: category_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Article'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new article.
+      tags:
+      - Article
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login and get JWT.
+      parameters:
+      - description: Identity
+        in: body
+        name: identity
+        required: true
+        schema:
+          type: string
+      - description: Password
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: If credentials are correct, return JWT.
+      tags:
+      - Auth
+  /api/v1/book:
+    post:
+      consumes:
+      - application/json
+      description: Create a new book.
+      parameters:
+      - description: Title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Author
+        in: body
+        name: author
+        required: true
+        schema:
+          type: string
+      - description: Book attributes
+        in: body
+        name: book_attrs
+        required: true
+        schema:
+          $ref: '#/definitions/models.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+      security:
+      - ApiKeyAuth: []
+      summary: create a new book
+      tags:
+      - Book
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
