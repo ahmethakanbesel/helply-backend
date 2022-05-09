@@ -13,9 +13,11 @@ func ApiRoutes(a *fiber.App) {
 
 	// Routes for auth
 	route.Post("/auth/login", controllers.Login)
+	// Example restricted route
+	route.Get("/restricted", middleware.Protected(), controllers.Hello)
 
 	// Post routes
-	route.Get("/posts", middleware.Protected(), controllers.GetPosts)
+	route.Get("/posts", controllers.GetPosts)
 	route.Get("/posts/:id", controllers.GetPost)
 	route.Post("/posts/", controllers.CreatePost)
 	route.Post("/posts/:id", controllers.UpdatePost)
