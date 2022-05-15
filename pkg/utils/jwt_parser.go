@@ -1,16 +1,18 @@
 package utils
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"os"
 	"strings"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 // TokenMetadata struct to describe metadata in JWT.
 type TokenMetadata struct {
-	Expires int64
+	ID       uint32
+	Identity string
+	Role     string
+	Expires  int64
 }
 
 // ExtractTokenMetadata func to extract metadata from JWT.
@@ -23,11 +25,16 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
 	// Setting and checking token and credentials.
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		// Expires time.
-		expires := int64(claims["exp"].(float64))
+		id := uint32(claims["id"].(float64))
+		identity := claims["identity"].(string)
+		role := claims["role"].(string)
+		expires := int64(claims["expires"].(float64))
 
 		return &TokenMetadata{
-			Expires: expires,
+			ID:       id,
+			Identity: identity,
+			Role:     role,
+			Expires:  expires,
 		}, nil
 	}
 

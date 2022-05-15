@@ -22,11 +22,18 @@ func ApiRoutes(a *fiber.App) {
 	route.Post("/posts/", controllers.CreatePost)
 	route.Post("/posts/:id", controllers.UpdatePost)
 	route.Delete("/posts/:id", controllers.DeletePost)
-
-	route.Get("/articles", controllers.GetArticles)
+  
+  // User routes
+	route.Get("/users", controllers.GetUsers)
+	route.Get("/users/:id", controllers.GetUser)
+	route.Post("/users/", controllers.CreateUser)
+	route.Post("/users/:id", controllers.UpdateUser)
+	route.Delete("/users/:id", controllers.DeleteUser)
+  
+  // Article routes
+  route.Get("/articles", controllers.GetArticles)
 	route.Get("/articles/:id", controllers.GetArticle)
 	route.Post("/articles/", controllers.CreateArticle)
 	route.Post("/articles/:id", controllers.UpdateArticle)
 	route.Delete("/articles/:id", controllers.DeleteArticle)
-
 }
