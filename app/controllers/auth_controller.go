@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/helply/backend/app/dto"
 	"github.com/helply/backend/app/models"
 	"github.com/helply/backend/platform/database"
 	"golang.org/x/crypto/bcrypt"
@@ -21,11 +22,7 @@ import (
 // @Success 200 {string} status "ok"
 // @Router /api/v1/auth/login [post]
 func Login(c *fiber.Ctx) error {
-	type LoginInput struct {
-		Identity string `json:"identity"`
-		Password string `json:"password"`
-	}
-	input := new(LoginInput)
+	input := new(dto.AuthDTO)
 	if err := c.BodyParser(&input); err != nil {
 		err := c.SendStatus(fiber.StatusUnauthorized)
 		if err != nil {

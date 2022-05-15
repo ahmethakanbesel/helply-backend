@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/helply/backend/app/dto"
 	"github.com/helply/backend/app/models"
+	"github.com/helply/backend/pkg/helpers"
 	"github.com/helply/backend/platform/database"
 )
 
@@ -17,13 +20,8 @@ import (
 // @Success 200 {object} models.User
 // @Router /api/v1/users [post]
 func CreateUser(ctx *fiber.Ctx) error {
-	type NewUser struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
 	db := database.Connection()
-	newUser := new(NewUser)
+	newUser := new(dto.UserDTO)
 
 	if err := ctx.BodyParser(newUser); err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid input data.", "data": err})
@@ -47,15 +45,12 @@ func GetUsers(ctx *fiber.Ctx) error {
 }
 
 func GetUser(ctx *fiber.Ctx) error {
-	/*
-		tokenData, err := utils.ExtractTokenMetadata(ctx)
-		if err != nil {
-			return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't extract token metadata", "data": err})
-		}
-		return ctx.Send([]byte(fmt.Sprintf("Hello user with id: %s", tokenData.Identity)))*/
-
-	user := &models.User{}
-	return ctx.JSON(user)
+	claims, err := helpers.ExtractTokenMetadata(ctx)
+	if err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get user", "data": err})
+	}
+	id := claims.Identity
+	return ctx.Send([]byte(fmt.Sprintf("Hello user with id: %s", id)))
 }
 
 // UpdateUser
