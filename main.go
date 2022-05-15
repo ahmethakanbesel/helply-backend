@@ -3,11 +3,11 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/gofiber/swagger"
+	"github.com/helply/backend/pkg/utils"
 	"os"
 	"strconv"
 
 	_ "github.com/helply/backend/docs"
-	"github.com/helply/backend/pkg/utils"
 	"github.com/helply/backend/platform/migrations"
 	_ "github.com/joho/godotenv/autoload"
 )
