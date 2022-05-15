@@ -20,7 +20,8 @@ import (
 // @Router /api/v1/articletags [post]
 func CreateArticleTag(ctx *fiber.Ctx) error {
 	type NewArticleTag struct {
-		Name string `json:"name"`
+		Name      string `json:"name"`
+		ArticleID uint32 `json:"article_id"`
 	}
 	db := database.Connection()
 	newArticleTag := new(NewArticleTag)
@@ -29,6 +30,7 @@ func CreateArticleTag(ctx *fiber.Ctx) error {
 	}
 	articleTag := new(models.ArticleTag)
 	articleTag.Name = newArticleTag.Name
+	articleTag.ArticleID = newArticleTag.ArticleID
 	if err := db.Create(&articleTag).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create article tag.", "data:": err})
 	}
@@ -66,7 +68,8 @@ func GetArticleTag(ctx *fiber.Ctx) error {
 
 func UpdateArticleTag(ctx *fiber.Ctx) error {
 	type NewArticleTag struct {
-		Name string `json:"name"`
+		Name      string `json:"name"`
+		ArticleID uint32 `json:"article_id"`
 	}
 	db := database.Connection()
 	newArticleTag := new(NewArticleTag)
@@ -75,6 +78,7 @@ func UpdateArticleTag(ctx *fiber.Ctx) error {
 	}
 	articleTag := new(models.ArticleTag)
 	articleTag.Name = newArticleTag.Name
+	articleTag.ArticleID = newArticleTag.ArticleID
 	if err := db.Updates(&articleTag).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create article tag.", "data:": err})
 	}

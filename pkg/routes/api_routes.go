@@ -44,6 +44,13 @@ func ApiRoutes(a *fiber.App) {
 	route.Post("/articletags/:id", controllers.UpdateArticleTag)
 	route.Delete("/articletags/:id", controllers.DeleteArticleTag)
 
+	// Article Category routes
+	route.Get("/articlecategory", controllers.GetArticleCategorys)
+	route.Get("/articlecategory/:id", controllers.GetArticleCategory)
+	route.Post("/articlecategory/", controllers.CreateArticleCategory)
+	route.Post("/articlecategory/:id", controllers.UpdateArticleCategory)
+	route.Delete("/articlecategory/:id", controllers.DeleteArticleCategory)
+
 	// Product routes
 	route.Get("/products", controllers.GetProducts)
 	route.Get("/products/:id", controllers.GetProduct)
