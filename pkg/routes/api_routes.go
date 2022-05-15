@@ -23,4 +23,10 @@ func ApiRoutes(a *fiber.App) {
 	route.Post("/posts/:id", controllers.UpdatePost)
 	route.Delete("/posts/:id", controllers.DeletePost)
 
+	// User routes
+	route.Get("/users", controllers.GetUsers)
+	route.Get("/users/:id", controllers.GetUser)
+	route.Post("/users/", controllers.CreateUser)
+	route.Post("/users/:id", controllers.UpdateUser)
+	route.Delete("/users/:id", controllers.DeleteUser)
 }
