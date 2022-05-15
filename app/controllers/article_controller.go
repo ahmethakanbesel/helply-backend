@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/helply/backend/app/models"
+	"github.com/helply/backend/platform/database"
 )
 
 // CreateArticle
@@ -18,26 +19,77 @@ import (
 // @Security ApiKeyAuth
 // @Router /api/v1/articles [post]
 func CreateArticle(ctx *fiber.Ctx) error {
-	article := &models.Article{}
-	return ctx.JSON(article)
+	type NewArticle struct {
+		Title      string `json:"title"`
+		Content    string `json:"content"`
+		ProductID  uint32 `json:"product_id"`
+		CategoryID uint32 `json:"category"`
+	}
+	db := database.Connection()
+	newArticle := new(NewArticle)
+	if err := ctx.BodyParser(newArticle); err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+	}
+	article := new(models.Article)
+	article.Title = newArticle.Title
+	article.Content = newArticle.Content
+	article.ProductID = newArticle.ProductID
+	article.CategoryID = newArticle.CategoryID
+	if err := db.Create(&article).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create article.", "data:": err})
+	}
+
+	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Article created", "data:": article})
+
 }
 
 func DeleteArticle(ctx *fiber.Ctx) error {
 	article := &models.Article{}
-	return ctx.JSON(article)
+	err := database.Connection().Delete(&article, "id = ?", ctx.Params("id")).Error
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(fiber.Map{"status": "success", "message": "Article deleted."})
 }
 
 func GetArticles(ctx *fiber.Ctx) error {
-	article := &models.Article{}
-	return ctx.JSON(article)
+	var articles []models.Article
+	database.Connection().Find(&articles)
+
+	return ctx.JSON(articles)
 }
 
 func GetArticle(ctx *fiber.Ctx) error {
 	article := &models.Article{}
+	err := database.Connection().First(&article, "id = ?", ctx.Params("id")).Error
+	if err != nil {
+		return err
+	}
+
 	return ctx.JSON(article)
 }
 
 func UpdateArticle(ctx *fiber.Ctx) error {
-	article := &models.Article{}
-	return ctx.JSON(article)
+	type NewArticle struct {
+		Title      string `json:"title"`
+		Content    string `json:"content"`
+		ProductID  uint32 `json:"product_id"`
+		CategoryID uint32 `json:"category"`
+	}
+	db := database.Connection()
+	newArticle := new(NewArticle)
+	if err := ctx.BodyParser(newArticle); err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+	}
+	article := new(models.Article)
+	article.Title = newArticle.Title
+	article.Content = newArticle.Content
+	article.ProductID = newArticle.ProductID
+	article.CategoryID = newArticle.CategoryID
+	if err := db.Updates(&article).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't update article.", "data:": err})
+	}
+
+	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Article updated", "data:": article})
 }

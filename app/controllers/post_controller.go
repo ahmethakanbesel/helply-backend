@@ -1,9 +1,7 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/helply/backend/app/models"
 	"github.com/helply/backend/platform/database"
 )
@@ -58,11 +56,6 @@ func DeletePost(ctx *fiber.Ctx) error {
 }
 
 func GetPosts(ctx *fiber.Ctx) error {
-	user := ctx.Locals("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	id := claims["sub"].(string)
-	return ctx.Send([]byte(fmt.Sprintf("Hello user with id: %s", id)))
-
 	var posts []models.Post
 	database.Connection().Find(&posts)
 
