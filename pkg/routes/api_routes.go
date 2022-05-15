@@ -38,18 +38,18 @@ func ApiRoutes(a *fiber.App) {
 	route.Delete("/articles/:id", controllers.DeleteArticle)
 
 	// Article Tag routes
-	route.Get("/articletags", controllers.GetArticleTags)
-	route.Get("/articletags/:id", controllers.GetArticleTag)
-	route.Post("/articletags/", controllers.CreateArticleTag)
-	route.Post("/articletags/:id", controllers.UpdateArticleTag)
-	route.Delete("/articletags/:id", controllers.DeleteArticleTag)
+	route.Get("/article-tags", controllers.GetArticleTags)
+	route.Get("/article-tags/:id", controllers.GetArticleTag)
+	route.Post("/article-tags/", controllers.CreateArticleTag)
+	route.Post("/article-tags/:id", controllers.UpdateArticleTag)
+	route.Delete("/article-tags/:id", controllers.DeleteArticleTag)
 
 	// Article Category routes
-	route.Get("/articlecategory", controllers.GetArticleCategorys)
-	route.Get("/articlecategory/:id", controllers.GetArticleCategory)
-	route.Post("/articlecategory/", controllers.CreateArticleCategory)
-	route.Post("/articlecategory/:id", controllers.UpdateArticleCategory)
-	route.Delete("/articlecategory/:id", controllers.DeleteArticleCategory)
+	route.Get("/article-category", controllers.GetArticleCategorys)
+	route.Get("/article-category/:id", controllers.GetArticleCategory)
+	route.Post("/article-category/", controllers.CreateArticleCategory)
+	route.Post("/article-category/:id", controllers.UpdateArticleCategory)
+	route.Delete("/article-category/:id", controllers.DeleteArticleCategory)
 
 	// Product routes
 	route.Get("/products", controllers.GetProducts)
