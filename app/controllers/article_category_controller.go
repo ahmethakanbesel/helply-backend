@@ -17,7 +17,7 @@ import (
 // @Param category_id body int true "Category ID"
 // @Success 200 {object} models.ArticleCategory
 // @Security ApiKeyAuth
-// @Router /api/v1/articlecategory [post]
+// @Router /api/v1/article-category [post]
 func CreateArticleCategory(ctx *fiber.Ctx) error {
 	type NewArticleCategory struct {
 		Name string `json:"name"`

@@ -17,7 +17,7 @@ import (
 // @Param category_id body int true "Category ID"
 // @Success 200 {object} models.ArticleTag
 // @Security ApiKeyAuth
-// @Router /api/v1/articletags [post]
+// @Router /api/v1/article-tags [post]
 func CreateArticleTag(ctx *fiber.Ctx) error {
 	type NewArticleTag struct {
 		Name      string `json:"name"`
