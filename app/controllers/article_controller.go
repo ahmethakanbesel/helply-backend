@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/helply/backend/app/dto"
 	"github.com/helply/backend/app/models"
 	"github.com/helply/backend/platform/database"
+	_ "strconv"
 )
 
 // CreateArticle
@@ -92,4 +94,25 @@ func UpdateArticle(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Article updated", "data:": article})
+}
+
+func VoteArticle(ctx *fiber.Ctx) error {
+	vote := new(dto.ArticleVoteDTO)
+	if err := ctx.BodyParser(vote); err != nil {
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+	}
+	article := &models.Article{}
+	err := database.Connection().First(&article, "id = ?", ctx.Params("id")).Error
+	if err != nil {
+		return ctx.Status(404).JSON(fiber.Map{"status:": "error", "message:": "Article not found.", "data:": err})
+	}
+	if vote.Type == 1 {
+		article.Votes = article.Votes + 1
+	} else {
+		article.Votes = article.Votes - 1
+	}
+	err = database.Connection().Model(&article).Updates(&models.Article{
+		Votes: article.Votes,
+	}).Error
+	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Article voted.", "data:": article})
 }
