@@ -9,6 +9,7 @@ type Article struct {
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
 	Title      string    `gorm:"type:varchar(255)" db:"title" json:"title" validate:"required,lte=255"`
+	Slug       string    `gorm:"type:varchar(255)" db:"slug" json:"slug" validate:"required,lte=255"`
 	Content    string    `db:"content" json:"content"`
 	Votes      int32     `gorm:"default:0" db:"votes" json:"votes"`
 	ProductID  uint32    `db:"product_id" json:"product_id" validate:"required"`
