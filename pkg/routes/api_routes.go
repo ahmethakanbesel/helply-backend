@@ -69,9 +69,9 @@ func ApiRoutes(a *fiber.App) {
 	route.Delete("/licences/:id", controllers.DeleteLicense)
 
 	// Customer License routes
-	route.Get("/customerlicenses", controllers.GetCustomerLicenses)
-	route.Get("/customerlicenses/:id", controllers.GetCustomerLicense)
-	route.Post("/customerlicenses/", controllers.CreateCustomerLicense)
-	route.Post("/customerlicenses/:id", controllers.UpdateCustomerLicense)
-	route.Delete("/customerlicenses/:id", controllers.DeleteCustomerLicense)
+	route.Get("/customer-licenses", controllers.GetCustomerLicenses)
+	route.Get("/customer-licenses/:id", controllers.GetCustomerLicense)
+	route.Post("/customer-licenses/", controllers.CreateCustomerLicense)
+	route.Post("/customer-licenses/:id", controllers.UpdateCustomerLicense)
+	route.Delete("/customer-licenses/:id", controllers.DeleteCustomerLicense)
 }
