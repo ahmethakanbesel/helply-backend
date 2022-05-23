@@ -3,10 +3,13 @@ package controllers
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/helply/backend/app/dto"
 	"github.com/helply/backend/app/models"
 	"github.com/helply/backend/pkg/helpers"
 	"github.com/helply/backend/platform/database"
+	"os"
+	"time"
 )
 
 // CreateUser
@@ -35,8 +38,23 @@ func CreateUser(ctx *fiber.Ctx) error {
 	if err := db.Create(&user).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't create user", "data": err})
 	}
+	token := jwt.New(jwt.SigningMethodHS256)
 
-	return ctx.JSON(fiber.Map{"status": "success", "message": "User created.", "data": user})
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = user.ID
+	claims["identity"] = user.Email
+	claims["expires"] = time.Now().Add(time.Hour * 72).Unix()
+	claims["role"] = user.UserRoleID
+	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+	if err != nil {
+		err := ctx.SendStatus(fiber.StatusInternalServerError)
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(fiber.Map{"status": "error", "message": "Couldn't sign token"})
+	}
+
+	return ctx.JSON(fiber.Map{"status": "success", "message": "User created.", "data": user, "token": t})
 }
 
 func GetUsers(ctx *fiber.Ctx) error {
