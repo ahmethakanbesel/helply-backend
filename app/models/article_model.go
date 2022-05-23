@@ -5,17 +5,20 @@ import (
 )
 
 type Article struct {
-	ID        uint32    `db:"id" json:"id" validate:"required"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
-	Title     string    `gorm:"type:varchar(255)" db:"title" json:"title" validate:"required,lte=255"`
-	//Slug       string    `gorm:"type:varchar(255)" db:"slug" json:"slug" validate:"required,lte=255"`
-	Content    string `db:"content" json:"content"`
-	Votes      int32  `gorm:"default:0" db:"votes" json:"votes"`
-	ProductID  uint32 `db:"product_id" json:"product_id" validate:"required"`
+	ID         uint32    `db:"id" json:"id" validate:"required"`
+	CreatedAt  time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
+	Title      string    `gorm:"type:varchar(255)" db:"title" json:"title" validate:"required,lte=255"`
+	Slug       string    `gorm:"type:varchar(255)" db:"slug" json:"slug" validate:"required,lte=255"`
+	Image      string    `gorm:"type:varchar(511)" db:"image" json:"image" validate:"required,lte=255"`
+	Content    string    `db:"content" json:"content"`
+	Votes      int32     `gorm:"default:0" db:"votes" json:"votes"`
+	ProductID  uint32    `db:"product_id" json:"product_id" validate:"required"`
 	Product    Product
 	CategoryID uint32 `db:"category_id" json:"category" validate:"required"`
 	Category   ArticleCategory
+	AuthorID   uint32 `db:"author_id" json:"author" validate:"required"`
+	Author     User
 }
 
 type ArticleCategory struct {
