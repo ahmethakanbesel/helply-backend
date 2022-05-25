@@ -13,9 +13,11 @@ type User struct {
 	Name       string    `gorm:"type:varchar(255)" db:"name" json:"name" validate:"required,min=3,max=255"`
 	Email      string    `gorm:"type:varchar(255);uniqueIndex" db:"email" json:"email" validate:"required,email,lte=255"`
 	Password   string    `gorm:"type:varchar(255)" db:"password" json:"-" validate:"required,lte=255"`
+	PhotoID    uint32    `gorm:"TYPE:bigint REFERENCES files;default:null" db:"photo_id" json:"photo_id"`
+	Photo      *File     `json:"photo"`
 	UserStatus int       `gorm:"default:1" db:"user_status" json:"user_status" validate:"required,len=1"`
 	UserRoleID uint32    `gorm:"default:3" db:"role_id" json:"role_id" validate:"required,len=1"`
-	UserRole   UserRole
+	UserRole   UserRole  `json:"role"`
 }
 
 type UserRole struct {

@@ -58,8 +58,9 @@ func CreateUser(ctx *fiber.Ctx) error {
 }
 
 func GetUsers(ctx *fiber.Ctx) error {
-	user := &models.User{}
-	return ctx.JSON(user)
+	var users []models.User
+	database.Connection().Joins("UserRole").Joins("Photo").Find(&users)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": users})
 }
 
 func GetUser(ctx *fiber.Ctx) error {
@@ -71,17 +72,6 @@ func GetUser(ctx *fiber.Ctx) error {
 	return ctx.Send([]byte(fmt.Sprintf("Hello user with id: %s", id)))
 }
 
-// UpdateUser
-// @Summary Create a new user.
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param name body string true "Name"
-// @Param email body string true "Email"
-// @Param password body int true "Password"
-// @Success 200 {object} models.User
-// @Security ApiKeyAuth
-// @Router /api/v1/users [post]
 func UpdateUser(ctx *fiber.Ctx) error {
 	user := &models.User{}
 	return ctx.JSON(user)
@@ -89,5 +79,9 @@ func UpdateUser(ctx *fiber.Ctx) error {
 
 func DeleteUser(ctx *fiber.Ctx) error {
 	user := &models.User{}
-	return ctx.JSON(user)
+	err := database.Connection().Delete(&user, "id = ?", ctx.Params("id")).Error
+	if err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't delete the user.", "data:": err})
+	}
+	return ctx.JSON(fiber.Map{"status": "success", "message": "User deleted."})
 }
