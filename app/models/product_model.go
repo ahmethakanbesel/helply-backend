@@ -9,8 +9,11 @@ type Product struct {
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 	Name      string    `gorm:"type:varchar(255)" db:"name" json:"name" validate:"required,lte=255"`
-	Icon      string    `gorm:"type:varchar(255)" db:"icon" json:"icon" validate:"lte=255"`
-	Image     string    `gorm:"type:varchar(255)" db:"image" json:"image" validate:"lte=255"`
-	PageID    uint32    `db:"page_id" json:"page_id"`
-	Page      Page
+	Active    bool      `gorm:"default:true" db:"is_active" json:"is_active"`
+	IconID    uint32    `gorm:"default:null" db:"icon_id" json:"icon_id"`
+	Icon      File      `json:"icon"`
+	ImageID   uint32    `db:"image_id" json:"image_id"`
+	Image     File      `json:"image"`
+	PageID    uint32    `gorm:"default:null" db:"page_id" json:"page_id"`
+	Page      Page      `json:"page"`
 }

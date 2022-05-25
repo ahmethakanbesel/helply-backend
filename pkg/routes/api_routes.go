@@ -74,4 +74,7 @@ func ApiRoutes(a *fiber.App) {
 	route.Post("/customer-licenses/", controllers.CreateCustomerLicense)
 	route.Post("/customer-licenses/:id", controllers.UpdateCustomerLicense)
 	route.Delete("/customer-licenses/:id", controllers.DeleteCustomerLicense)
+
+	// File Routes
+	route.Post("/files/", controllers.UploadFile)
 }

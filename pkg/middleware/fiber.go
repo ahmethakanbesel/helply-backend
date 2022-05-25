@@ -17,4 +17,5 @@ func FiberMiddleware(a *fiber.App) {
 			AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 		}),
 	)
+	a.Static("/uploads", "./uploads")
 }

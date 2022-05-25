@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/jwt/v3 v3.2.11
 	github.com/gofiber/swagger v0.0.1
 	github.com/golang-jwt/jwt/v4 v4.4.1
+	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/swaggo/swag v1.8.1
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
