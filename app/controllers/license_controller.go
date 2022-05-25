@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/helply/backend/app/dto"
 	"github.com/helply/backend/app/models"
 	"github.com/helply/backend/platform/database"
-	"time"
 )
 
 // CreateLicense
@@ -12,24 +12,14 @@ import (
 // @Tags License
 // @Accept json
 // @Produce json
-// @Param title body string true "Title"
-// @Param content body string true "Content"
-// @Param product_id body int true "Product ID"
-// @Param category_id body int true "Category ID"
 // @Success 200 {object} models.License
 // @Security ApiKeyAuth
 // @Router /api/v1/licences [post]
 func CreateLicense(ctx *fiber.Ctx) error {
-	type NewLicense struct {
-		ExpiresAt time.Time `json:"expires_at"`
-		Code      string    `json:"code"`
-		ProductID uint32    `json:"product_id"`
-		IsActive  bool      `json:"is_active"`
-	}
 	db := database.Connection()
-	newLicense := new(NewLicense)
+	newLicense := new(dto.LicenseDTO)
 	if err := ctx.BodyParser(newLicense); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
 	license := new(models.License)
 	license.ExpiresAt = newLicense.ExpiresAt
@@ -37,10 +27,10 @@ func CreateLicense(ctx *fiber.Ctx) error {
 	license.ProductID = newLicense.ProductID
 	license.IsActive = newLicense.IsActive
 	if err := db.Create(&license).Error; err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create license.", "data:": err})
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create a license.", "data:": err})
 	}
 
-	return ctx.JSON(fiber.Map{"status:": "success", "message:": "License created", "data:": license})
+	return ctx.JSON(fiber.Map{"status:": "success", "message:": "License created.", "data:": license})
 
 }
 
@@ -48,7 +38,7 @@ func DeleteLicense(ctx *fiber.Ctx) error {
 	license := &models.License{}
 	err := database.Connection().Delete(&license, "id = ?", ctx.Params("id")).Error
 	if err != nil {
-		return err
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't delete the license.", "data:": err})
 	}
 
 	return ctx.JSON(fiber.Map{"status": "success", "message": "License deleted."})
@@ -56,30 +46,22 @@ func DeleteLicense(ctx *fiber.Ctx) error {
 
 func GetLicenses(ctx *fiber.Ctx) error {
 	var licenses []models.License
-	database.Connection().Find(&licenses)
-
-	return ctx.JSON(licenses)
+	database.Connection().Joins("Product").Preload("Product.Image").Find(&licenses)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "Licenses listed.", "data": licenses})
 }
 
 func GetLicense(ctx *fiber.Ctx) error {
 	license := &models.License{}
 	err := database.Connection().First(&license, "id = ?", ctx.Params("id")).Error
 	if err != nil {
-		return err
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the license.", "data:": err})
 	}
-
-	return ctx.JSON(license)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": license})
 }
 
 func UpdateLicense(ctx *fiber.Ctx) error {
-	type NewLicense struct {
-		ExpiresAt time.Time `json:"expires_at"`
-		Code      string    `json:"code"`
-		ProductID uint32    `json:"product_id"`
-		IsActive  bool      `json:"is_active"`
-	}
 	db := database.Connection()
-	newLicense := new(NewLicense)
+	newLicense := new(dto.LicenseDTO)
 	if err := ctx.BodyParser(newLicense); err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
 	}
