@@ -24,26 +24,21 @@ import (
 func Login(c *fiber.Ctx) error {
 	input := new(dto.AuthDTO)
 	if err := c.BodyParser(&input); err != nil {
-		err := c.SendStatus(fiber.StatusUnauthorized)
-		if err != nil {
-			return err
-		}
-		return c.JSON(fiber.Map{"status": "error", "message": "Invalid email or password"})
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Invalid data given."})
 	}
 	identity := input.Identity
 	pass := input.Password
 	user := &models.User{}
-	err := database.Connection().First(&user, "email = ?", identity).Error
+	err := database.Connection().Joins("UserRole").First(&user, "email = ?", identity).Error
 	if err != nil {
-		return c.JSON(fiber.Map{"status": "error", "message": "Invalid email or password"})
+		return c.Status(401).JSON(fiber.Map{"status": "error", "message": "Invalid email or password"})
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
 	if user.Email != identity || err != nil {
-		err := c.SendStatus(fiber.StatusUnauthorized)
-		if err != nil {
-			return err
-		}
-		return c.JSON(fiber.Map{"status": "error", "message": "Invalid email or password"})
+		return c.Status(401).JSON(fiber.Map{"status": "error", "message": "Invalid email or password"})
+	}
+	if user.UserRole.Name != input.Role {
+		return c.Status(401).JSON(fiber.Map{"status": "error", "message": "Invalid email or password"})
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -52,12 +47,7 @@ func Login(c *fiber.Ctx) error {
 	claims["id"] = user.ID
 	claims["identity"] = identity
 	claims["expires"] = time.Now().Add(time.Hour * 72).Unix()
-	claims["role"] = ""
-	userRole := &models.UserRole{}
-	err = database.Connection().First(&userRole, "id = ?", user.UserRoleID).Error
-	if err == nil {
-		claims["role"] = userRole.Name
-	}
+	claims["role"] = user.UserRole.Name
 
 	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 	if err != nil {
