@@ -51,7 +51,7 @@ func GetProduct(ctx *fiber.Ctx) error {
 	product := &models.Product{}
 	err := database.Connection().First(&product, "id = ?", ctx.Params("id")).Error
 	if err != nil {
-		return err
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the product.", "data:": err})
 	}
 
 	return ctx.JSON(product)
