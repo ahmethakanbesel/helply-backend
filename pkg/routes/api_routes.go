@@ -87,6 +87,9 @@ func ApiRoutes(a *fiber.App) {
 	route.Get("/ticket-replies/:id", controllers.GetTicketReplies)
 	route.Post("/ticket-replies/", controllers.CreateTicketReply)
 
+	// Stat routes
+	route.Get("/admin-stats", controllers.GetAdminStats)
+
 	// File Routes
 	route.Post("/files/", controllers.UploadFile)
 }
