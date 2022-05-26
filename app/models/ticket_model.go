@@ -5,19 +5,19 @@ import (
 )
 
 type Ticket struct {
-	ID             uint32    `db:"id" json:"id" validate:"required"`
-	CreatedAt      time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt      time.Time `db:"updated_at" json:"updated_at"`
-	CustomerID     uint32    `db:"customer_id" json:"customer_id" validate:"required"`
-	Customer       User
-	AgentID        uint32 `db:"agent_id" json:"agent_id" validate:"uuid"`
-	Agent          User
-	TicketTopicID  uint32 `db:"topic_id" json:"topic_id" validate:"required"`
-	TicketTopic    TicketTopic
-	TicketStatusID uint32 `gorm:"default:0" db:"status_id" json:"status_id"`
-	TicketStatus   TicketStatus
-	ProductID      uint32 `db:"product_id" json:"product_id" validate:"required"`
-	Product        Product
+	ID             uint32       `db:"id" json:"id" validate:"required"`
+	CreatedAt      time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt      time.Time    `db:"updated_at" json:"updated_at"`
+	CustomerID     uint32       `db:"customer_id" json:"customer_id" validate:"required"`
+	Customer       User         `json:"customer"`
+	AgentID        uint32       `db:"agent_id" json:"agent_id" validate:"uuid"`
+	Agent          User         `json:"agent"`
+	TicketTopicID  uint32       `db:"topic_id" json:"topic_id" validate:"required"`
+	TicketTopic    TicketTopic  `json:"topic"`
+	TicketStatusID uint32       `gorm:"default:0" db:"status_id" json:"status_id"`
+	TicketStatus   TicketStatus `json:"status"`
+	ProductID      uint32       `db:"product_id" json:"product_id" validate:"required"`
+	Product        Product      `json:"product"`
 }
 
 type TicketStatus struct {
@@ -37,10 +37,10 @@ type TicketReply struct {
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 	TicketID  uint32    `db:"ticket_id" json:"ticket_id" validate:"required"`
-	Ticket    Ticket
-	UserID    uint32 `db:"user_id" json:"user_id" validate:"required"`
-	User      User
-	Content   string `db:"content" json:"content" validate:"required"`
+	Ticket    Ticket    `json:"ticket"`
+	UserID    uint32    `db:"user_id" json:"user_id" validate:"required"`
+	User      User      `json:"user"`
+	Content   string    `db:"content" json:"content" validate:"required"`
 }
 
 type TicketReplyAttachment struct {

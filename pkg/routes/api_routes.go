@@ -75,6 +75,18 @@ func ApiRoutes(a *fiber.App) {
 	route.Post("/customer-licenses/:id", controllers.UpdateCustomerLicense)
 	route.Delete("/customer-licenses/:id", controllers.DeleteCustomerLicense)
 
+	// Ticket routes
+	route.Get("/tickets", controllers.GetTickets)
+	route.Get("/tickets/:id", controllers.GetTicket)
+	route.Post("/tickets/", controllers.CreateTicket)
+	route.Post("/tickets/:id", controllers.UpdateTicket)
+	route.Post("/tickets/:id/close", controllers.CloseTicket)
+	route.Delete("/tickets/:id", controllers.DeleteTicket)
+
+	// Ticket Reply routes
+	route.Get("/ticket-replies/:id", controllers.GetTicketReplies)
+	route.Post("/ticket-replies/", controllers.CreateTicketReply)
+
 	// File Routes
 	route.Post("/files/", controllers.UploadFile)
 }
