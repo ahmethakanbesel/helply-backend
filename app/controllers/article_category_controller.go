@@ -47,11 +47,10 @@ func DeleteArticleCategory(ctx *fiber.Ctx) error {
 	return ctx.JSON(fiber.Map{"status": "success", "message": "Article Category deleted."})
 }
 
-func GetArticleCategorys(ctx *fiber.Ctx) error {
-	var articleCategorys []models.ArticleCategory
-	database.Connection().Find(&articleCategorys)
-
-	return ctx.JSON(articleCategorys)
+func GetArticleCategories(ctx *fiber.Ctx) error {
+	var categories []models.ArticleCategory
+	database.Connection().Find(&categories)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": categories})
 }
 
 func GetArticleCategory(ctx *fiber.Ctx) error {

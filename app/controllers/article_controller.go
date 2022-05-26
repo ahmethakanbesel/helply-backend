@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/helply/backend/app/dto"
 	"github.com/helply/backend/app/models"
+	"github.com/helply/backend/pkg/helpers"
 	"github.com/helply/backend/platform/database"
 	_ "strconv"
 )
@@ -13,36 +14,30 @@ import (
 // @Tags Article
 // @Accept json
 // @Produce json
-// @Param title body string true "Title"
-// @Param content body string true "Content"
-// @Param product_id body int true "Product ID"
-// @Param category_id body int true "Category ID"
 // @Success 200 {object} models.Article
 // @Security ApiKeyAuth
 // @Router /api/v1/articles [post]
 func CreateArticle(ctx *fiber.Ctx) error {
-	type NewArticle struct {
-		Title      string `json:"title"`
-		Content    string `json:"content"`
-		ProductID  uint32 `json:"product_id"`
-		CategoryID uint32 `json:"category"`
-	}
 	db := database.Connection()
-	newArticle := new(NewArticle)
+	newArticle := new(dto.ArticleDTO)
 	if err := ctx.BodyParser(newArticle); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
 	article := new(models.Article)
 	article.Title = newArticle.Title
 	article.Content = newArticle.Content
 	article.ProductID = newArticle.ProductID
 	article.CategoryID = newArticle.CategoryID
-	if err := db.Create(&article).Error; err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create article.", "data:": err})
+	article.ImageID = newArticle.ImageID
+	claims, err := helpers.ExtractTokenMetadata(ctx)
+	if err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
 	}
-
+	article.AuthorID = claims.ID
+	if err := db.Create(&article).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create an article.", "data:": err})
+	}
 	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Article created", "data:": article})
-
 }
 
 func DeleteArticle(ctx *fiber.Ctx) error {
@@ -57,19 +52,18 @@ func DeleteArticle(ctx *fiber.Ctx) error {
 
 func GetArticles(ctx *fiber.Ctx) error {
 	var articles []models.Article
-	database.Connection().Find(&articles)
-
-	return ctx.JSON(articles)
+	//database.Connection().Joins(clause.Associations).Find(&articles)
+	database.Connection().Joins("Category").Joins("Product").Joins("Author").Joins("Image").Preload("Author.Photo").Find(&articles)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": articles})
 }
 
 func GetArticle(ctx *fiber.Ctx) error {
 	article := &models.Article{}
-	err := database.Connection().First(&article, "id = ?", ctx.Params("id")).Error
+	err := database.Connection().Joins("Category").Joins("Product").Joins("Author").Joins("Image").Preload("Author.Photo").First(&article, "articles.id = ?", ctx.Params("id")).Error
 	if err != nil {
-		return err
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Could not get the article.", "data:": err})
 	}
-
-	return ctx.JSON(article)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": article})
 }
 
 func UpdateArticle(ctx *fiber.Ctx) error {
