@@ -8,7 +8,7 @@ type UserDTO struct {
 	PhotoID  string `json:"photo_id"`
 }
 
-type UserLoginDTO struct {
+type UserRegisterDTO struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
