@@ -29,7 +29,7 @@ func Login(c *fiber.Ctx) error {
 	identity := input.Identity
 	pass := input.Password
 	user := &models.User{}
-	err := database.Connection().Joins("UserRole").First(&user, "email = ?", identity).Error
+	err := database.Connection().Joins("UserRole").Joins("Photo").First(&user, "email = ?", identity).Error
 	if err != nil {
 		return c.Status(401).JSON(fiber.Map{"status": "error", "message": "Invalid email or password"})
 	}
