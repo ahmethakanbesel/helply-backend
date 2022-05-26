@@ -31,6 +31,13 @@ func CreateTicketReply(ctx *fiber.Ctx) error {
 
 func GetTicketReplies(ctx *fiber.Ctx) error {
 	var ticketReplies []models.TicketReply
+	database.Connection().Order("created_at desc").Joins("User").Preload("User.Photo").Preload("Ticket.Product").Preload("Ticket.TicketTopic").Find(&ticketReplies, "\"User\".\"user_role_id\" = ?", 3)
+
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": ticketReplies})
+}
+
+func GetTicketRepliesById(ctx *fiber.Ctx) error {
+	var ticketReplies []models.TicketReply
 	database.Connection().Order("created_at desc").Joins("User").Preload("User.Photo").Find(&ticketReplies, "ticket_id = ?", ctx.Params("id"))
 
 	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": ticketReplies})

@@ -84,7 +84,8 @@ func ApiRoutes(a *fiber.App) {
 	route.Delete("/tickets/:id", controllers.DeleteTicket)
 
 	// Ticket Reply routes
-	route.Get("/ticket-replies/:id", controllers.GetTicketReplies)
+	route.Get("/ticket-replies/", controllers.GetTicketReplies)
+	route.Get("/ticket-replies/:id", controllers.GetTicketRepliesById)
 	route.Post("/ticket-replies/", controllers.CreateTicketReply)
 
 	// Stat routes
