@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/helply/backend/app/dto"
@@ -9,6 +8,7 @@ import (
 	"github.com/helply/backend/pkg/helpers"
 	"github.com/helply/backend/platform/database"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -24,7 +24,7 @@ import (
 // @Router /api/v1/users [post]
 func CreateUser(ctx *fiber.Ctx) error {
 	db := database.Connection()
-	newUser := new(dto.UserDTO)
+	newUser := new(dto.UserLoginDTO)
 
 	if err := ctx.BodyParser(newUser); err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid input data.", "data": err})
@@ -68,8 +68,16 @@ func GetUser(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get user", "data": err})
 	}
-	id := claims.Identity
-	return ctx.Send([]byte(fmt.Sprintf("Hello user with id: %s", id)))
+	if claims.Role == "customer" && ctx.Params("id") != strconv.Itoa(int(claims.ID)) {
+		return ctx.Status(403).JSON(fiber.Map{"status": "error", "message": "You can't access the user."})
+	}
+	user := &models.User{}
+	err = database.Connection().First(&user, "id = ?", ctx.Params("id")).Error
+	if err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user.", "data:": err})
+	}
+
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": user})
 }
 
 func UpdateUser(ctx *fiber.Ctx) error {
