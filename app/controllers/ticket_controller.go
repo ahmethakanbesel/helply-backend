@@ -17,28 +17,40 @@ import (
 // @Security ApiKeyAuth
 // @Router /api/v1/products [post]
 func CreateTicket(ctx *fiber.Ctx) error {
-	db := database.Connection()
-	newProduct := new(dto.ProductDTO)
-	if err := ctx.BodyParser(newProduct); err != nil {
+	claims, err := helpers.ExtractTokenMetadata(ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+	}
+	newTicket := new(dto.TicketDTO)
+	if err = ctx.BodyParser(newTicket); err != nil {
 		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
-	product := new(models.Product)
-	product.Name = newProduct.Name
-	product.ImageID = newProduct.ImageID
-	if err := db.Create(&product).Error; err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create product.", "data:": err})
+	db := database.Connection()
+	ticket := new(models.Ticket)
+	ticket.TicketTopicID = newTicket.TopicID
+	ticket.ProductID = newTicket.ProductID
+	ticket.TicketStatusID = 1
+	ticket.CustomerID = claims.ID
+	if err = db.Create(&ticket).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create a ticket.", "data:": err})
 	}
-	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Product created", "data:": product})
+	ticketReply := new(models.TicketReply)
+	ticketReply.TicketID = ticket.ID
+	ticketReply.UserID = claims.ID
+	ticketReply.Content = newTicket.Content
+	if err = db.Create(&ticketReply).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create a ticket reply.", "data:": err})
+	}
+	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Ticket created.", "data:": ticket})
 }
 
 func DeleteTicket(ctx *fiber.Ctx) error {
-	product := &models.Product{}
-	err := database.Connection().Delete(&product, "id = ?", ctx.Params("id")).Error
+	ticket := &models.Ticket{}
+	err := database.Connection().Delete(&ticket, "id = ?", ctx.Params("id")).Error
 	if err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't delete the product.", "data:": err})
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't delete the ticket.", "data:": err})
 	}
-
-	return ctx.JSON(fiber.Map{"status": "success", "message": "Product deleted."})
+	return ctx.JSON(fiber.Map{"status": "success", "message": "Ticket deleted."})
 }
 
 func GetTickets(ctx *fiber.Ctx) error {
@@ -65,7 +77,7 @@ func GetTicket(ctx *fiber.Ctx) error {
 }
 
 func UpdateTicket(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Product created"})
+	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Ticket updated."})
 }
 
 func CloseTicket(ctx *fiber.Ctx) error {
