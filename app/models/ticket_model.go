@@ -10,11 +10,11 @@ type Ticket struct {
 	UpdatedAt      time.Time    `db:"updated_at" json:"updated_at"`
 	CustomerID     uint32       `db:"customer_id" json:"customer_id" validate:"required"`
 	Customer       User         `json:"customer"`
-	AgentID        uint32       `db:"agent_id" json:"agent_id" validate:"uuid"`
+	AgentID        uint32       `gorm:"default:null" db:"agent_id" json:"agent_id" validate:"uuid"`
 	Agent          User         `json:"agent"`
 	TicketTopicID  uint32       `db:"topic_id" json:"topic_id" validate:"required"`
 	TicketTopic    TicketTopic  `json:"topic"`
-	TicketStatusID uint32       `gorm:"default:0" db:"status_id" json:"status_id"`
+	TicketStatusID uint32       `gorm:"default:1" db:"status_id" json:"status_id"`
 	TicketStatus   TicketStatus `json:"status"`
 	ProductID      uint32       `db:"product_id" json:"product_id" validate:"required"`
 	Product        Product      `json:"product"`
