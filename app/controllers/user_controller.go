@@ -91,7 +91,7 @@ func UpdateUser(ctx *fiber.Ctx) error {
 	user := &models.User{}
 	err = database.Connection().First(&user, "id = ?", claims.ID).Error
 	if err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user.", "data:": err})
 	}
 	if newUser.Name != "" {
 		user.Name = newUser.Name
