@@ -19,20 +19,37 @@ func CreateTicketReply(ctx *fiber.Ctx) error {
 	reply.Content = newReply.Content
 	claims, err := helpers.ExtractTokenMetadata(ctx)
 	if err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
 	}
 	// @TODO: Check user permissions
 	reply.UserID = claims.ID
-	if err := db.Create(&reply).Error; err != nil {
+	if err = db.Create(&reply).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create a ticket reply.", "data:": err})
 	}
 	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Ticket reply created.", "data:": reply})
 }
 
 func GetTicketReplies(ctx *fiber.Ctx) error {
+	claims, err := helpers.ExtractTokenMetadata(ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+	}
+	if claims.Role == "customer" {
+		return GetAgentReplies(ctx)
+	} else {
+		return GetCustomerReplies(ctx)
+	}
+}
+
+func GetCustomerReplies(ctx *fiber.Ctx) error {
 	var ticketReplies []models.TicketReply
 	database.Connection().Order("created_at desc").Joins("User").Preload("User.Photo").Preload("Ticket.Product").Preload("Ticket.TicketTopic").Find(&ticketReplies, "\"User\".\"user_role_id\" = ?", 3)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": ticketReplies})
+}
 
+func GetAgentReplies(ctx *fiber.Ctx) error {
+	var ticketReplies []models.TicketReply
+	database.Connection().Order("created_at desc").Joins("User").Preload("User.Photo").Preload("Ticket.Product").Preload("Ticket.TicketTopic").Find(&ticketReplies, "\"User\".\"user_role_id\" != ?", 3)
 	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": ticketReplies})
 }
 
