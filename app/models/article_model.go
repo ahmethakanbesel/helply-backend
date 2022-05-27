@@ -37,3 +37,13 @@ type ArticleTag struct {
 	Article   Article
 	Name      string `gorm:"type:varchar(255)" db:"name" json:"name" validate:"required,lte=255"`
 }
+
+type UserSavedArticle struct {
+	ID        uint32    `db:"id" json:"id" validate:"required"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	ArticleID uint32    `gorm:"index:idx_article_user,unique" db:"article_id" json:"article_id"`
+	Article   Article   `json:"article"`
+	UserID    uint32    `gorm:"index:idx_article_user,unique" db:"user_id" json:"user_id"`
+	User      Article   `json:"user"`
+}
