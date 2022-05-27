@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/helply/backend/app/dto"
 	"github.com/helply/backend/app/models"
+	"github.com/helply/backend/pkg/helpers"
 	"github.com/helply/backend/platform/database"
 )
 
@@ -42,8 +43,15 @@ func DeleteTicket(ctx *fiber.Ctx) error {
 
 func GetTickets(ctx *fiber.Ctx) error {
 	var tickets []models.Ticket
-	database.Connection().Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets)
-
+	claims, err := helpers.ExtractTokenMetadata(ctx)
+	if err != nil {
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+	}
+	if claims.Role == "customer" {
+		database.Connection().Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets, "\"Customer\".\"id\" = ?", claims.ID)
+	} else {
+		database.Connection().Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets)
+	}
 	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": tickets})
 }
 
