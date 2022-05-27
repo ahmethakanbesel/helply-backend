@@ -82,11 +82,6 @@ func UpdateTicket(ctx *fiber.Ctx) error {
 
 func CloseTicket(ctx *fiber.Ctx) error {
 	ticket := &models.Ticket{}
-	err := database.Connection().First(&ticket, "tickets.id = ?", ctx.Params("id")).Error
-	if err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Could not get the ticket.", "data:": err})
-	}
-	ticket.TicketStatusID = 2
-	database.Connection().Save(ticket)
+	database.Connection().Model(&models.Ticket{}).Where("id = ?", ctx.Params("id")).Update("ticket_status_id", 2)
 	return ctx.JSON(fiber.Map{"status": "success", "message": "Ticket closed.", "data": ticket})
 }
