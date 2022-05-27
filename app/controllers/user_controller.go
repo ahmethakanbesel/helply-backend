@@ -25,10 +25,8 @@ import (
 func CreateUser(ctx *fiber.Ctx) error {
 	db := database.Connection()
 	newUser := new(dto.UserRegisterDTO)
-
 	if err := ctx.BodyParser(newUser); err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid input data.", "data": err})
-
 	}
 	user := new(models.User)
 	user.Name = newUser.Name
@@ -81,8 +79,37 @@ func GetUser(ctx *fiber.Ctx) error {
 }
 
 func UpdateUser(ctx *fiber.Ctx) error {
+	claims, err := helpers.ExtractTokenMetadata(ctx)
+	if err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get user", "data": err})
+	}
+	newUser := new(dto.UserDTO)
+	if err = ctx.BodyParser(newUser); err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid data given.", "data": err})
+
+	}
 	user := &models.User{}
-	return ctx.JSON(user)
+	err = database.Connection().First(&user, "id = ?", claims.ID).Error
+	if err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user.", "data:": err})
+	}
+	if newUser.Name != "" {
+		user.Name = newUser.Name
+	}
+	if newUser.Email != "" {
+		user.Email = newUser.Email
+	}
+	if newUser.Phone != "" {
+		user.Phone = newUser.Phone
+	}
+	if newUser.PhotoID > 0 {
+		user.PhotoID = newUser.PhotoID
+	}
+	if newUser.Password != "" {
+		user.Password = models.HashPassword(newUser.Password)
+	}
+	database.Connection().Save(user)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "User updated.", "data": user})
 }
 
 func DeleteUser(ctx *fiber.Ctx) error {

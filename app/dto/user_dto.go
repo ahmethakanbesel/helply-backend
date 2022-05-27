@@ -5,7 +5,7 @@ type UserDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Phone    string `json:"phone"`
-	PhotoID  string `json:"photo_id"`
+	PhotoID  uint32 `json:"photo_id"`
 }
 
 type UserRegisterDTO struct {
