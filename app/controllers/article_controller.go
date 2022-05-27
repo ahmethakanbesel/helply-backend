@@ -67,27 +67,29 @@ func GetArticle(ctx *fiber.Ctx) error {
 }
 
 func UpdateArticle(ctx *fiber.Ctx) error {
-	type NewArticle struct {
-		Title      string `json:"title"`
-		Content    string `json:"content"`
-		ProductID  uint32 `json:"product_id"`
-		CategoryID uint32 `json:"category"`
-	}
-	db := database.Connection()
-	newArticle := new(NewArticle)
+	newArticle := new(dto.ArticleUpdateDTO)
 	if err := ctx.BodyParser(newArticle); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status": "error", "message": "Invalid data given.", "data": err})
 	}
-	article := new(models.Article)
-	article.Title = newArticle.Title
-	article.Content = newArticle.Content
-	article.ProductID = newArticle.ProductID
-	article.CategoryID = newArticle.CategoryID
-	if err := db.Updates(&article).Error; err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't update article.", "data:": err})
+	article := &models.Article{}
+	err := database.Connection().First(&article, "id = ?", ctx.Params("id")).Error
+	if err != nil || article.ID <= 0 {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the article.", "data:": err})
 	}
-
-	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Article updated", "data:": article})
+	if newArticle.Title != "" {
+		article.Title = newArticle.Title
+	}
+	if newArticle.ProductID > 0 {
+		article.ProductID = newArticle.ProductID
+	}
+	if newArticle.CategoryID > 0 {
+		article.CategoryID = newArticle.CategoryID
+	}
+	if newArticle.Content != "" {
+		article.Content = newArticle.Content
+	}
+	database.Connection().Save(article)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "Article updated.", "data": article})
 }
 
 func VoteArticle(ctx *fiber.Ctx) error {
