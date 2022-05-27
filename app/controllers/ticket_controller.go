@@ -60,9 +60,9 @@ func GetTickets(ctx *fiber.Ctx) error {
 		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
 	}
 	if claims.Role == "customer" {
-		database.Connection().Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets, "\"Customer\".\"id\" = ?", claims.ID)
+		database.Connection().Order("created_at desc").Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets, "\"Customer\".\"id\" = ?", claims.ID)
 	} else {
-		database.Connection().Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets)
+		database.Connection().Order("created_at desc").Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets)
 	}
 	return ctx.JSON(fiber.Map{"status": "success", "message": "", "data": tickets})
 }
