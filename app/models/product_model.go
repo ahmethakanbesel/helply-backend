@@ -12,7 +12,7 @@ type Product struct {
 	Active    bool      `gorm:"default:true" db:"is_active" json:"is_active"`
 	IconID    uint32    `gorm:"default:null" db:"icon_id" json:"icon_id"`
 	Icon      File      `json:"icon"`
-	ImageID   uint32    `db:"image_id" json:"image_id"`
+	ImageID   uint32    `gorm:"default:null" db:"image_id" json:"image_id"`
 	Image     File      `json:"image"`
 	PageID    uint32    `gorm:"default:null" db:"page_id" json:"page_id"`
 	Page      Page      `json:"page"`
