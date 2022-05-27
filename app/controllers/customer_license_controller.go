@@ -13,10 +13,6 @@ import (
 // @Tags CustomerLicense
 // @Accept json
 // @Produce json
-// @Param title body string true "Title"
-// @Param content body string true "Content"
-// @Param product_id body int true "Product ID"
-// @Param category_id body int true "Category ID"
 // @Success 200 {object} models.CustomerLicense
 // @Security ApiKeyAuth
 // @Router /api/v1/customer-licenses [post]
@@ -38,12 +34,10 @@ func CreateCustomerLicense(ctx *fiber.Ctx) error {
 		return ctx.Status(404).JSON(fiber.Map{"status": "error", "message": "License code is not valid.", "data": err})
 	}
 	customerLicense.LicenseID = license.ID
-	if err := db.Create(&customerLicense).Error; err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create Customer License.", "data:": err})
+	if err = db.Create(&customerLicense).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't assign the license to the user.", "data:": err})
 	}
-
 	return ctx.JSON(fiber.Map{"status:": "success", "message:": "Customer license created", "data:": customerLicense})
-
 }
 
 func DeleteCustomerLicense(ctx *fiber.Ctx) error {
@@ -52,15 +46,17 @@ func DeleteCustomerLicense(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(fiber.Map{"status": "success", "message": "Customer License deleted."})
 }
 
 func GetCustomerLicenses(ctx *fiber.Ctx) error {
+	claims, err := helpers.ExtractTokenMetadata(ctx)
+	if err != nil {
+		return ctx.Status(404).JSON(fiber.Map{"status": "error", "message": "Couldn't get user", "data": err})
+	}
 	var customerLicenses []models.CustomerLicense
-	database.Connection().Find(&customerLicenses)
-
-	return ctx.JSON(customerLicenses)
+	database.Connection().Joins("License").Preload("License.Product").Preload("License.Product.Image").Find(&customerLicenses, "customer_licenses.customer_id = ?", claims.ID)
+	return ctx.JSON(fiber.Map{"status": "success", "message": "Customer licenses listed.", "data": customerLicenses})
 }
 
 func GetCustomerLicense(ctx *fiber.Ctx) error {

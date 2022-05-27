@@ -20,7 +20,7 @@ type CustomerLicense struct {
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
 	CustomerID uint32    `db:"customer_id" json:"customer_id" validate:"required"`
-	Customer   User
-	LicenseID  uint32 `db:"license_id" json:"license_id" validate:"required"`
-	License    License
+	Customer   User      `json:"customer"`
+	LicenseID  uint32    `gorm:"uniqueIndex" db:"license_id" json:"license_id" validate:"required"`
+	License    License   `json:"license"`
 }
