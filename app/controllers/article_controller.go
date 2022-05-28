@@ -95,7 +95,7 @@ func UpdateArticle(ctx *fiber.Ctx) error {
 func VoteArticle(ctx *fiber.Ctx) error {
 	vote := new(dto.ArticleVoteDTO)
 	if err := ctx.BodyParser(vote); err != nil {
-		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
 	article := &models.Article{}
 	err := database.Connection().First(&article, "id = ?", ctx.Params("id")).Error
