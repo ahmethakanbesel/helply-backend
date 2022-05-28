@@ -77,7 +77,7 @@ func UpdateCustomerLicense(ctx *fiber.Ctx) error {
 	db := database.Connection()
 	newCustomerLicense := new(NewCustomerLicense)
 	if err := ctx.BodyParser(newCustomerLicense); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
 	customerLicense := new(models.CustomerLicense)
 	customerLicense.CustomerID = newCustomerLicense.CustomerID
