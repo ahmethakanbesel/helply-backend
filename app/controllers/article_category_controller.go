@@ -25,7 +25,7 @@ func CreateArticleCategory(ctx *fiber.Ctx) error {
 	db := database.Connection()
 	newArticleCategory := new(NewArticleCategory)
 	if err := ctx.BodyParser(newArticleCategory); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
 	}
 	articleCategory := new(models.ArticleCategory)
 	articleCategory.Name = newArticleCategory.Name
