@@ -26,7 +26,7 @@ func CreateArticleTag(ctx *fiber.Ctx) error {
 	db := database.Connection()
 	newArticleTag := new(NewArticleTag)
 	if err := ctx.BodyParser(newArticleTag); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
 	articleTag := new(models.ArticleTag)
 	articleTag.Name = newArticleTag.Name
@@ -74,7 +74,7 @@ func UpdateArticleTag(ctx *fiber.Ctx) error {
 	db := database.Connection()
 	newArticleTag := new(NewArticleTag)
 	if err := ctx.BodyParser(newArticleTag); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
 	articleTag := new(models.ArticleTag)
 	articleTag.Name = newArticleTag.Name
