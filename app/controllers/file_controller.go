@@ -18,8 +18,7 @@ func UploadFile(c *fiber.Ctx) error {
 	fileUUID := uuid.New()
 	// Check for errors:
 	if err == nil {
-		err := c.SaveFile(file, fmt.Sprintf("./uploads/%s", fileUUID))
-
+		err = c.SaveFile(file, fmt.Sprintf("./uploads/%s", fileUUID))
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't upload the file.", "data:": err})
 		}
@@ -31,7 +30,7 @@ func UploadFile(c *fiber.Ctx) error {
 	newFile.IsPublic = true
 	newFile.Path = fileUUID.String()
 	newFile.OwnerID = claims.ID
-	if err := database.Connection().Create(&newFile).Error; err != nil {
+	if err = database.Connection().Create(&newFile).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't create a file.", "data:": err})
 	}
 	return c.JSON(fiber.Map{"status:": "success", "message:": "File uploaded.", "data": newFile})
