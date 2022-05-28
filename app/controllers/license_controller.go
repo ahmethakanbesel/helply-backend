@@ -63,7 +63,7 @@ func UpdateLicense(ctx *fiber.Ctx) error {
 	db := database.Connection()
 	newLicense := new(dto.LicenseDTO)
 	if err := ctx.BodyParser(newLicense); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Invalid input data.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Invalid data given.", "data:": err})
 	}
 	license := new(models.License)
 	license.ExpiresAt = newLicense.ExpiresAt
