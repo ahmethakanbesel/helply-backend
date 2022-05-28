@@ -11,7 +11,7 @@ import (
 func CreateUserSavedArticle(ctx *fiber.Ctx) error {
 	claims, err := helpers.ExtractTokenMetadata(ctx)
 	if err != nil {
-		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user details.", "data:": err})
 	}
 	db := database.Connection()
 	newSavedArticle := new(dto.UserSavedArticleDTO)

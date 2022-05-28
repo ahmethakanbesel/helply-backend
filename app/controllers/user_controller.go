@@ -26,7 +26,7 @@ func CreateUser(ctx *fiber.Ctx) error {
 	db := database.Connection()
 	newUser := new(dto.UserRegisterDTO)
 	if err := ctx.BodyParser(newUser); err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid input data.", "data": err})
+		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid data given.", "data": err})
 	}
 	user := new(models.User)
 	user.Name = newUser.Name

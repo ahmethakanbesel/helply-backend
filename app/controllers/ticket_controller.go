@@ -19,7 +19,7 @@ import (
 func CreateTicket(ctx *fiber.Ctx) error {
 	claims, err := helpers.ExtractTokenMetadata(ctx)
 	if err != nil {
-		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user details.", "data:": err})
 	}
 	newTicket := new(dto.TicketDTO)
 	if err = ctx.BodyParser(newTicket); err != nil {
@@ -57,7 +57,7 @@ func GetTickets(ctx *fiber.Ctx) error {
 	var tickets []models.Ticket
 	claims, err := helpers.ExtractTokenMetadata(ctx)
 	if err != nil {
-		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user details.", "data:": err})
 	}
 	if claims.Role == "customer" {
 		database.Connection().Order("created_at desc").Joins("Customer").Joins("Product").Joins("TicketTopic").Joins("TicketStatus").Find(&tickets, "\"Customer\".\"id\" = ?", claims.ID)

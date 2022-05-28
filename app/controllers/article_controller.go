@@ -31,7 +31,7 @@ func CreateArticle(ctx *fiber.Ctx) error {
 	article.ImageID = newArticle.ImageID
 	claims, err := helpers.ExtractTokenMetadata(ctx)
 	if err != nil {
-		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+		return ctx.Status(500).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user details.", "data:": err})
 	}
 	article.AuthorID = claims.ID
 	if err := db.Create(&article).Error; err != nil {

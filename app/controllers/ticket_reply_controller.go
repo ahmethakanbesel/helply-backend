@@ -19,7 +19,7 @@ func CreateTicketReply(ctx *fiber.Ctx) error {
 	reply.Content = newReply.Content
 	claims, err := helpers.ExtractTokenMetadata(ctx)
 	if err != nil {
-		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user details.", "data:": err})
 	}
 	// @TODO: Check user permissions
 	reply.UserID = claims.ID
@@ -32,7 +32,7 @@ func CreateTicketReply(ctx *fiber.Ctx) error {
 func GetTicketReplies(ctx *fiber.Ctx) error {
 	claims, err := helpers.ExtractTokenMetadata(ctx)
 	if err != nil {
-		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user information.", "data:": err})
+		return ctx.Status(400).JSON(fiber.Map{"status:": "error", "message:": "Couldn't get the user details.", "data:": err})
 	}
 	if claims.Role == "customer" {
 		return GetAgentReplies(ctx)
